@@ -3,10 +3,10 @@ package main
 import (
     "os"
     "log"
-    "net"
-    "fmt"
     "github.com/urfave/cli"
+    finder "network-cli/finder"
 )
+
 
 
 func main() {
@@ -27,14 +27,7 @@ func main() {
         Usage: "Looks up names servers",
         Flags: myFlags,
         Action: func(c *cli.Context) error {
-            ns, err := net.LookupNS(c.String("host"))
-            if err != nil {
-                return err 
-            }
-            for _, v := range ns{
-                fmt.Println(v.Host)
-                }
-                return nil 
+            return finder.FindNS(c.String("host"))
             },
         },
         {
@@ -42,14 +35,7 @@ func main() {
             Usage: "Looks Up IP for a host",
             Flags: myFlags,
             Action: func(c *cli.Context) error {
-                ip, err := net.LookupIP(c.String("host"))
-                if err != nil {
-                    fmt.Println(err)
-                }
-                for _, v := range ip {
-                    fmt.Println(v)
-                }
-                return nil
+                return finder.FindIP(c.String("host"))
             },
         },
         {
@@ -57,13 +43,7 @@ func main() {
             Usage: "Looks up the CNAME",
             Flags: myFlags,
             Action: func(c *cli.Context) error {
-                cname, err := net.LookupCNAME(c.String("host"))
-                if err != nil {
-                    fmt.Println(err)
-                    return err 
-                }
-                fmt.Println(cname)
-                return nil 
+                return finder.FindCname(c.String("host"))
             },
         },
         {
@@ -71,17 +51,19 @@ func main() {
             Usage: "Looks up mx records ",
             Flags: myFlags,
             Action: func(c *cli.Context) error {
-                mx, err := net.LookupMX(c.String("host"))
-                if err != nil {
-                    fmt.Println(err)
-                    return err
-                }
-                for _, v := range mx{
-                    fmt.Println(v.Host, v.Pref)
-                }
-                return nil
-            },
+                return finder.FindMX(c.String("host"))
+             },
 
+        },
+        {
+            Name: "all",
+            Usage: "Finds MX, CNAME, IP and NS Records",
+            Flags: myFlags,
+            Action: func(c *cli.Context) error {
+                 finder.FindAll(c.String("host"))
+                
+                 return nil 
+            },
         },
             
     }
